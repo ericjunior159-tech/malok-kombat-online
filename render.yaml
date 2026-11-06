@@ -1,0 +1,17 @@
+services:
+  - type: web
+    name: malok-kombat-online
+    runtime: node
+    plan: free
+    region: virginia
+    buildCommand: npm install --omit=dev
+    startCommand: npm start
+    healthCheckPath: /health
+    autoDeployTrigger: commit
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: MALOK_MAX_ROOMS
+        value: '250'
+      - key: MALOK_MAX_CONNECTIONS
+        value: '600'

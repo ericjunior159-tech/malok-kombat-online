@@ -1,0 +1,16 @@
+export const POWER_ACTIONS=['special','power2','power3','power4'];
+const types={projectile:{cost:30,cooldown:1.8,damage:18,description:'Projétil de médio alcance.'},wave:{cost:28,cooldown:3,damage:19,description:'Onda baixa que percorre o chão.'},dash:{cost:22,cooldown:2.8,damage:14,description:'Avança rapidamente e golpeia de perto.'},teleport:{cost:28,cooldown:4,damage:10,description:'Reposiciona ao lado do rival e golpeia.'},shield:{cost:28,cooldown:6,damage:0,description:'Reduz o dano recebido durante 2,2 segundos.'},trap:{cost:28,cooldown:4,damage:17,description:'Armadilha no chão, ativa por 3 segundos.'},heal:{cost:35,cooldown:7,damage:0,description:'Recupera até 18 pontos de vida.'},beam:{cost:45,cooldown:5,damage:25,description:'Feixe longo e direto na direção do rival.'},rain:{cost:45,cooldown:6,damage:8,description:'Três objetos caem sobre a posição do rival.'},multishot:{cost:40,cooldown:5,damage:8,description:'Três disparos em sequência.'},radial:{cost:40,cooldown:5,damage:23,description:'Explosão que atinge ao redor do lutador.'}};
+const sets={
+ camera:[['Flash Cinético','projectile','flash'],['Anel de Foco','trap','lens'],['Travelling','dash','film'],['Chuva de Câmeras','rain','camera']],
+ math:[['Corte de Luz','beam','lightcut'],['Match Cut','teleport','shutter'],['Estabilizador','shield','gimbal'],['Longa Exposição','multishot','exposure']],
+ thai:[['Troca de Cena','wave','curtain'],['Cortina Protetora','shield','fabric'],['Fita de Marcação','trap','tape'],['Set em Colapso','rain','crate']],
+ eric:[['Corte Seco','projectile','timeline'],['Arrasto de Timeline','wave','tracks'],['Ripple Cut','dash','scissors'],['Render Final','rain','render']],
+ gigica:[['Corte em Loop','projectile','loop'],['Reprise','heal','rewind'],['Split Screen','shield','split'],['Multicam','multishot','multicam']],
+ kaka:[['Contra-regra','projectile','clapper'],['Corre de Set','dash','boom'],['Marca no Chão','trap','cone'],['Rebatedor Solar','beam','reflector']],
+ samuel:[['Plano Sequência','projectile','viewfinder'],['Dolly Rápido','dash','dolly'],['Foco Travado','trap','reticle'],['Rajada Estroboscópica','multishot','strobe']],
+ gabi:[['Vetor de Impacto','projectile','vector'],['Máscara de Recorte','shield','mask'],['Curva Bézier','wave','bezier'],['Explosão CMYK','radial','cmyk']],
+ frequencia:[['Onda Sônica','projectile','sound'],['Grave Profundo','wave','equalizer'],['Retorno Acústico','shield','echo'],['Drop de Frequência','radial','speaker']],
+};
+const POWERS=Object.fromEntries(Object.entries(sets).map(([id,list])=>[id,list.map(([name,type,visual],i)=>({name,type,visual,action:POWER_ACTIONS[i],key:['L','U','I','O'][i],...types[type],...(id==='thai'&&name==='Cortina Protetora'?{duration:5,description:'Protege por 5 segundos, reduzindo o dano em 75%. O tempo restante aparece no botão.'}:{}),...(id==='eric'&&name==='Arrasto de Timeline'?{description:'Onda de timeline que aproxima o adversário.'}:{}),...(id==='eric'&&name==='Ripple Cut'?{description:'Corte rápido que atravessa o adversário.'}:{}),...(id==='eric'&&name==='Render Final'?{description:'Três elementos renderizados caem sobre o adversário.'}:{} )}))]));
+export const getPowers=id=>POWERS[id]||POWERS.camera;
+export const getPower=(id,action)=>getPowers(id).find(p=>p.action===action);

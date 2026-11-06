@@ -1,0 +1,7 @@
+MALOK KOMBAT V3.0 — ONLINE E PWA
+
+Instruções de instalação, hospedagem no Render, modo online, salas, limites e direitos de uso:
+README-ONLINE.md
+
+Para testes locais: instale Node.js 20+, execute INICIAR-MALOK.command no Mac ou npm start.
+Para divulgar publicamente: hospede via HTTPS em um Web Service Node com WebSocket.

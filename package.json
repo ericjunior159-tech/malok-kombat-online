@@ -1,0 +1,13 @@
+{
+  "name": "malok-kombat-online",
+  "version": "3.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "start": "node server.mjs"
+  },
+  "description": "Malok Kombat online, PWA e salas multiplayer WebSocket (2 jogadores por sala).",
+  "engines": {
+    "node": ">=20"
+  }
+}

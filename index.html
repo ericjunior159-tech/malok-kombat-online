@@ -1,0 +1,113 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+<meta name="theme-color" content="#101211"><meta name="description" content="Luz, câmera, combate. Entre no set de Malok Kombat, um jogo de luta 3D com poderes do audiovisual.">
+<title>Malok Kombat — Luz, câmera, combate.</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='12' fill='%23111312'/%3E%3Cpath d='M12 46V18l12 16 8-16 8 16 12-16v28h-8V35l-5 9-7-13-7 13-5-9v11z' fill='%23ff7135'/%3E%3C/svg%3E">
+<link rel="stylesheet" href="./style.css">
+
+<script>
+(function(){
+  function showError(e){
+    if(document.getElementById('mk-load-error'))return;
+    const message=(e?.reason?.stack||e?.reason?.message||e?.message||String(e||'Falha desconhecida')).slice(0,1200);
+    const b=document.createElement('aside');b.id='mk-load-error';
+    b.style.cssText='position:fixed;inset:auto 12px 12px;z-index:100000;padding:15px;background:#151b18;border:1px solid #ff773d;color:white;font:14px Arial;max-width:660px;box-shadow:0 6px 50px #000b';
+    const h=document.createElement('strong');h.textContent='MALOK KOMBAT — Falha de inicialização';
+    const pre=document.createElement('pre');pre.style.cssText='white-space:pre-wrap;word-break:break-word;font:12px monospace;max-height:100px;overflow:auto';pre.textContent=message;
+    const a=document.createElement('a');a.href='/diagnostico';a.style.cssText='color:#ff955c';a.textContent='Abrir diagnóstico do aparelho';
+    b.append(h,pre,a);document.body.append(b);
+    console.error('Malok Kombat:',message);
+  }
+  window.addEventListener('error', showError);
+  window.addEventListener('unhandledrejection', showError);
+})();
+</script>
+</head>
+<body>
+<canvas tabindex="-1" id="arena" aria-label="Arena 3D de luta em um estúdio de gravação"></canvas>
+<div class="vignette"></div><div class="grain"></div>
+<div id="loading" class="loading"><span class="loading-logo">MK<span>■</span></span><p>PREPARANDO O SET<span class="ellipsis">...</span></p></div>
+<div id="app">
+<header id="header" class="topbar minimalist-topbar">
+<button class="wordmark" id="brand" aria-label="Voltar ao início"><span class="brand-icon">M<span>K</span></span><span>MALOK<br>KOMBAT</span></button>
+</header>
+<main>
+<section id="home" class="screen home-screen">
+<div id="home-cinema" class="home-cinema" aria-hidden="true">
+  <div class="home-cinema-frame" id="cinema-frame-a"><div class="home-cinema-picture"></div><div class="home-cinema-title"></div></div>
+  <div class="home-cinema-frame" id="cinema-frame-b"><div class="home-cinema-picture"></div><div class="home-cinema-title"></div></div>
+  <div class="home-cinema-shade"></div>
+</div>
+<div class="home-copy"><div class="eyebrow"><span class="tiny-cross">✳</span> LUZ. CÂMERA. COMBATE.</div><h1>MALOK<br><span>KOMBAT</span><i>®</i></h1><div class="title-rule"><span></span> O PRÓXIMO TAKE É SEU.</div><p class="intro-copy">O set virou uma arena.<br>Escolha seu lado. Faça cada golpe valer.</p><button id="start" class="primary-button">ESCOLHER MODO <span>↗</span></button><div class="keyboard-note"><span class="key-small">↵</span> PRESSIONE ENTER PARA COMEÇAR</div>
+
+</div>
+<div class="home-quick-actions" aria-label="Ações rápidas da tela inicial"><button id="sound" class="icon-button" aria-label="Ativar som" title="Ativar som"><svg viewBox="0 0 24 24"><path d="M11 5 6 9H3v6h3l5 4V5Z"/><path class="sound-wave" d="M15 8c3 2 3 6 0 8m3-11c5 4 5 10 0 14"/><path class="sound-off" d="m16 9 5 6m0-6-5 6"/></svg></button><button id="fullscreen" class="icon-button" aria-label="Tela cheia" title="Tela cheia"><svg viewBox="0 0 24 24"><path d="M8 3H3v5m13-5h5v5M3 16v5h5m13-5v5h-5"/></svg></button></div>
+</section>
+<section id="selection" class="screen selection-screen" hidden>
+<div class="selection-heading"><button id="back" class="text-button">← VOLTAR</button><span class="eyebrow">01 / CONFIRME SEU PERSONAGEM</span><h2>QUEM VAI DOMINAR <em>O SET?</em></h2><p>Confirme seu personagem. Depois, escolha quem vai enfrentar.</p></div>
+<div class="selection-preview-label"><span class="eyebrow" id="preview-role">LUZ &amp; IMPACTO</span><h3 id="preview-name">VICTOR TEO</h3><p id="preview-description">Um olhar preciso. Um impacto implacável.</p><div id="preview-powers" class="preview-powers"></div><div class="preview-power"><span>✳</span><b id="preview-power">FLASH CINÉTICO</b><small>PODER ESPECIAL</small></div></div>
+<div class="roster-panel"><div class="selection-slots" role="group" aria-label="Escolher quem você está selecionando"><button id="choose-player" class="selection-slot active" type="button" aria-pressed="true"><small>01 / SEU PERSONAGEM</small><strong id="selection-player-name">VICTOR TEO</strong></button><button id="choose-opponent" disabled class="selection-slot" type="button" aria-pressed="false"><small>02 / ADVERSÁRIO</small><strong id="selection-opponent-name">ESCOLHER ADVERSÁRIO</strong></button></div><div class="roster-panel-heading"><span id="selection-slot-label">ESCOLHA SEU PERSONAGEM</span><small>08 + EXTRA</small></div><div id="fighter-choices" class="fighter-choices roster-grid" aria-label="Escolher personagem"></div><p id="selection-status" class="selection-status" aria-live="polite">Selecione a aba Adversário e escolha contra quem lutar.</p><button id="play-selected" class="primary-button play-selected" type="button" disabled>Escolher jogador <span>↗</span></button></div>
+<div class="selection-footer"><span><kbd>←</kbd><kbd>↑</kbd><kbd>↓</kbd><kbd>→</kbd> NAVEGAR <kbd>ENTER</kbd> ESCOLHER</span><span>VOCÊ <i>×</i> ADVERSÁRIO ESCOLHIDO</span></div>
+</section>
+<section id="fight" class="screen fight-screen" hidden>
+<div class="fight-hud"><div class="health-panel player-panel"><div class="fighter-name"><span id="player-name">VICTOR TEO</span><small>VOCÊ / P1</small></div><div class="health-track"><div id="player-health" class="health-fill"></div></div><div class="under-health"><div class="energy-track"><div id="player-energy"></div></div><span id="player-wins" class="wins">◇ ◇</span></div><span class="power-label" id="power-label">FLASH CINÉTICO</span></div><div class="round-clock"><span id="round-label">ROUND 01</span><strong id="timer">60</strong><button id="pause" aria-label="Abrir menu de pausa" title="Menu de pausa · Esc">Ⅱ <small>PAUSAR</small></button></div><div class="health-panel enemy-panel"><div class="fighter-name"><span id="enemy-name">FII</span><small>CPU / P2</small></div><div class="health-track"><div id="enemy-health" class="health-fill"></div></div><div class="under-health"><div class="energy-track"><div id="enemy-energy"></div></div><span id="enemy-wins" class="wins">◇ ◇</span></div><span class="power-label">ADVERSÁRIO / CPU</span></div></div>
+<div id="power-feedback" class="power-feedback" aria-live="polite"></div><div id="power-bar" class="power-bar"></div><div id="fight-message" class="fight-message" aria-live="polite"></div><div id="combo" class="combo"><strong>2</strong><span>HITS<br><b>COMBO</b></span></div><div id="hit-flash"></div>
+<div id="championship-fight-hud" class="mk-champ-fight-hud" hidden></div>
+<div class="arena-caption"><span class="status-dot"></span>STUDIO 01 <span>/</span> GRAVAÇÃO EM ANDAMENTO</div>
+<div class="desktop-controls"><span><kbd>A</kbd><kbd>D</kbd> MOVER</span><span><kbd>W</kbd> PULAR</span><span><kbd>S</kbd> ABAIXAR</span><span><kbd>J</kbd> SOCO</span><span><kbd>K</kbd> CHUTE</span><span><kbd>L</kbd><kbd>U</kbd><kbd>I</kbd><kbd>O</kbd> PODERES</span><span><kbd>ESPAÇO</kbd> DEFESA</span><span class="esc-control"><kbd>ESC</kbd> PAUSAR</span></div>
+<div class="touch-controls" id="touch-controls"><div id="joystick" class="joystick" aria-label="Joystick: mover, pular e abaixar"><span class="joystick-ring"></span><span id="joystick-knob" class="joystick-knob"></span><small>MOVER</small></div><button data-input="punch" class="pad-button punch" aria-label="Quadrado: soco">□<small>SOCO</small></button><button data-input="kick" class="pad-button kick" aria-label="Bolinha: chute">○<small>CHUTE</small></button><button data-input="block" class="pad-button guard" aria-label="Triângulo: segurar para defender">△<small>DEFESA</small></button><button data-input="special" class="pad-button power" aria-label="Poder 1">L<small>PODER 1</small></button><button data-input="power2" class="pad-button power" aria-label="Poder 2">U<small>PODER 2</small></button><button data-input="power3" class="pad-button power" aria-label="Poder 3">I<small>PODER 3</small></button><button data-input="power4" class="pad-button power" aria-label="Poder 4">O<small>PODER 4</small></button></div>
+</section>
+</main>
+
+<!-- V2.1: torre do campeonato e HUD limpo; a tela inicial e os controles originais permanecem intactos. -->
+<dialog id="mode-dialog" class="mk-mode-dialog" aria-label="Escolha o modo de jogo e a dificuldade">
+ <div class="modal-top"><span class="eyebrow">NOVO TAKE / SELECIONE O MODO</span><button type="button" id="mode-back" class="icon-button" aria-label="Fechar modos">×</button></div>
+ <h2>ESCOLHA SEU <em>DESAFIO.</em></h2>
+ <div class="mk-mode-options" role="group" aria-label="Modos de jogo">
+  <button type="button" data-mode-choice="free" class="mk-mode-option active" aria-pressed="true"><span class="mk-mode-num">01 / COMBATE</span><strong>LUTA LIVRE</strong><small>Escolha seu personagem e contra quem lutar. O modo clássico, sem alterações.</small></button>
+  <button type="button" data-mode-choice="championship" class="mk-mode-option" aria-pressed="false"><span class="mk-mode-num">02 / CAMPANHA</span><strong>CAMPEONATO</strong><small>Oito lutas, ordem sorteada. A dificuldade cresce até o chefão Fii.</small></button><button type="button" data-mode-choice="multiplayer" class="mk-mode-option" aria-pressed="false"><span class="mk-mode-num">03 / REDE LOCAL</span><strong>MULTIPLAYER</strong><small>Crie uma sala para dois jogadores ou entre com um código. Cada um joga no próprio aparelho.</small></button>
+ </div>
+ <div id="mk-difficulty-block"><div class="mk-difficulty-heading"><span>ESCOLHA A DIFICULDADE</span><small>Seu personagem mantém a mesma força em todos os níveis.</small></div>
+ <div class="mk-difficulty-options" role="group" aria-label="Nível de dificuldade"><button type="button" data-difficulty-choice="easy" aria-pressed="false">FÁCIL</button><button type="button" data-difficulty-choice="normal" class="active" aria-pressed="true">NORMAL</button><button type="button" data-difficulty-choice="expert" aria-pressed="false">EXPERT</button></div>
+ </div>
+ <button type="button" id="mode-begin" class="primary-button">ESCOLHER LUTADORES · LUTA LIVRE <span>↗</span></button>
+</dialog>
+<dialog id="multiplayer-dialog" class="mk-mp-dialog" aria-label="Multiplayer local Malok Kombat">
+  <div class="modal-top"><span class="eyebrow">MALOK KOMBAT / MULTIPLAYER LOCAL</span><button type="button" id="mp-close" class="icon-button" aria-label="Sair do multiplayer">×</button></div>
+  <h2>DESAFIE <em>UM AMIGO.</em></h2>
+  <p class="mk-mp-status" id="mp-status" aria-live="polite">O Mac precisa estar servindo o jogo. Os dois devem abrir o mesmo endereço na rede.</p>
+  <div id="mp-entry" class="mk-mp-entry">
+    <button type="button" class="mk-mp-big" id="mp-create"><small>01 / SOU O DESAFIANTE</small><strong>CRIAR SALA</strong><span>Gere um código e convide um amigo.</span></button>
+    <div class="mk-mp-join"><small>02 / RECEBI UM CONVITE</small><label for="mp-code">CÓDIGO DA SALA</label><input id="mp-code" type="text" maxlength="6" autocomplete="off" autocapitalize="characters" spellcheck="false" placeholder="ABC123"/><button type="button" id="mp-join" class="secondary-button">ENTRAR NA SALA <span>↗</span></button></div>
+  </div>
+  <div id="mp-room" hidden>
+    <div class="mk-mp-room-head"><div><small>CÓDIGO DO DESAFIO</small><strong id="mp-room-code">------</strong></div><button type="button" id="mp-copy" class="secondary-button">COPIAR LINK</button></div>
+    <div class="mk-mp-players"><div class="mk-mp-seat" id="mp-seat-0"><small>JOGADOR 1 · DESAFIANTE</small><strong>AGUARDANDO...</strong></div><div class="mk-mp-seat" id="mp-seat-1"><small>JOGADOR 2 · DESAFIADO</small><strong>AGUARDANDO...</strong></div></div>
+    <p class="mk-mp-roster-caption">ESCOLHA SEU LUTADOR</p>
+    <div class="mk-mp-roster" id="mp-roster"></div>
+    <div class="mk-mp-actions"><button type="button" id="mp-ready" class="secondary-button">ESTOU PRONTO</button><button type="button" id="mp-start" class="primary-button" hidden>COMEÇAR LUTA <span>↗</span></button></div>
+    <p id="mp-room-tip" class="mk-mp-tip">Aguardando um segundo jogador...</p>
+  </div>
+</dialog>
+<dialog id="ladder-dialog" class="mk-ladder-dialog" aria-label="Torre do campeonato">
+ <div class="modal-top"><span class="eyebrow">CAMPEONATO / SUBA A TORRE</span><button type="button" id="ladder-back" class="icon-button" aria-label="Voltar">×</button></div>
+ <h2 id="ladder-title">SUBA A <em>TORRE.</em></h2>
+ <p id="ladder-progress">DIFICULDADE · NORMAL</p>
+ <div id="ladder-shell" class="mk-ladder-shell">
+  <div id="ladder-player-marker" class="ladder-player-marker" aria-hidden="true"></div>
+  <div id="ladder-list" class="mk-ladder-tower" aria-label="Torre de adversários"></div>
+ </div>
+ <div class="mk-tower-base"><span>SEU LUTADOR SOBE BLOCO A BLOCO</span><b>CHEFÃO NO TOPO · FII</b></div>
+ <button type="button" id="ladder-go" class="primary-button">COMEÇAR LUTA <span>↗</span></button>
+</dialog>
+<dialog id="help-dialog"><div class="modal-top"><span class="eyebrow">MANUAL DO LUTADOR</span><button class="close-dialog icon-button" aria-label="Fechar">×</button></div><h2>DOMINE <em>O TAKE.</em></h2><p>Combine direção e ataque. Repita ou segure J para três socos; K para três chutes.</p><div class="control-grid"><div><span><kbd>A</kbd> <kbd>D</kbd> ou <kbd>←</kbd> <kbd>→</kbd></span><b>Movimentar</b></div><div><span><kbd>W</kbd> ou <kbd>↑</kbd></span><b>Pular</b></div><div><span><kbd>S</kbd> ou <kbd>↓</kbd></span><b>Abaixar</b></div><div><span><kbd>J</kbd></span><b>Soco rápido</b></div><div><span><kbd>K</kbd></span><b>Chute de alcance</b></div><div><span><kbd>L</kbd></span><b>Poder 1</b></div><div><span><kbd>U</kbd> <kbd>I</kbd> <kbd>O</kbd></span><b>Poderes 2, 3 e 4</b></div><div><span><kbd>ESPAÇO</kbd></span><b>Defender</b></div><div><span><kbd>ESC</kbd></span><b>Pausar</b></div></div><div class="combo-tip"><span>↗</span><p><b>MOVIMENTO SEM CORTES</b>Segure a direção e aperte J ou K. Combine pulo + chute e repita J → J → J ou K → K → K para finalizar o combo. No celular, use vários dedos nos controles.</p></div><div id="guide-powers" class="guide-powers"></div><p class="rules">Melhor de 3 rounds · 60 segundos por round · Energia recarrega com o tempo.</p><button class="primary-button close-dialog">ENTENDI. AÇÃO! <span>↗</span></button></dialog>
+<div id="pause-scrim" hidden aria-hidden="true"></div>
+<dialog id="pause-dialog"><span class="eyebrow">CORTE!</span><h2>O SET ESTÁ<br><em>EM PAUSA.</em></h2><p>Respire. O próximo take é seu.</p><button id="resume" class="primary-button">CONTINUAR JOGO <span>▷</span></button><button id="change-character" class="secondary-button">SELECIONAR NOVO PERSONAGEM</button><button id="pause-settings" class="secondary-button">CONFIGURAÇÕES</button><button id="pause-home" class="text-button">← VOLTAR AO INÍCIO</button></dialog>
+<dialog id="result-dialog"><span class="eyebrow">FIM DA GRAVAÇÃO</span><h2 id="result-title">VOCÊ<br><em>VENCEU.</em></h2><p id="result-subtitle">Seu nome nos créditos finais.</p><div class="result-score" id="result-score">2 — 0</div><button id="rematch" class="primary-button">MAIS UM TAKE <span>↗</span></button><button id="result-select" class="secondary-button">TROCAR PERSONAGEM</button><button id="result-home" class="text-button">← VOLTAR AO INÍCIO</button></dialog>
+<dialog id="settings-dialog"><div class="modal-top"><span class="eyebrow">DO SEU JEITO</span><button id="settings-close" class="icon-button" aria-label="Fechar configurações">×</button></div><h2>CONFIGU<em>RAÇÕES.</em></h2><div class="settings-tabs"><button data-tab="audio" class="active">ÁUDIO</button><button data-tab="controls">CONTROLES</button></div><section id="settings-audio"><label class="setting-row">Áudio geral <input id="audio-master" type="checkbox"></label><label class="setting-row">Música nas lutas <input id="audio-music" type="checkbox"></label><label class="range-setting">Volume da música <output id="music-value"></output><input id="music-volume" type="range" min="0" max="100"></label><label class="setting-row">Ambiência e efeitos <input id="audio-ambience" type="checkbox"></label><label class="range-setting">Volume da ambiência e golpes <output id="ambience-value"></output><input id="ambience-volume" type="range" min="0" max="100"></label><p class="settings-note">A música toca apenas durante a luta, em um loop do trecho de 0 a 60 segundos.</p></section><section id="settings-controls" hidden><label class="setting-row">Controle externo <select id="gamepad-mode"><option value="auto">Detectar automaticamente</option><option value="off">Desativado</option></select></label><p id="gamepad-status" class="settings-note">Conecte um gamepad via USB ou Bluetooth e pressione um botão.</p><label class="range-setting">Zona morta do analógico <output id="deadzone-value"></output><input id="gamepad-deadzone" type="range" min="10" max="40"></label><p class="settings-note">Analógico esquerdo: mover. A/✕: pular · X/□: soco · B/○: chute · Y/△: poder 1 · LB/L1: defesa · RB/R1: poder 2 · LT/L2: poder 3 · RT/R2: poder 4 · Start/Options: pausa. Pareie o Bluetooth nas configurações do seu dispositivo.</p><h3>POSIÇÃO DOS CONTROLES DE TOQUE</h3><p class="settings-note">Arraste o joystick e os botões na área abaixo. As posições são salvas neste navegador.</p><div id="layout-editor" class="layout-editor" aria-label="Editor de posição dos botões"></div><button id="reset-layout" class="secondary-button">RESTAURAR POSIÇÕES</button><p class="settings-note">Teclado e gamepad ocultam os botões de toque. Tocar na tela mostra os botões novamente.</p></section><button id="settings-done" class="primary-button">SALVAR E VOLTAR <span>↗</span></button></dialog><div id="toast" role="status"></div>
+</div>
+<script type="module" src="./app.js"></script>
+<audio id="mk-menu-theme" preload="auto" loop src="./assets/menu-theme.mp3" hidden></audio>
+</body></html>
